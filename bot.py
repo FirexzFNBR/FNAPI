@@ -1,3 +1,27 @@
+"""
+MIT License
+
+Copyright (c) 2024 FirexFNBR and SpireFNBR
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 import os
 import requests
 import tweepy
@@ -17,11 +41,11 @@ from colorama import *
 filepath = 'put_your_exports_path' # IT'S NECESSARY TO EXPORT NEW AND ALL COSMETICS.
 language = 'en'
 #=========================#
-#     # V1 Tweepy
+# # V1
 # auth = tweepy.OAuthHandler(twitAPIKey, twitAPISecretKey)
 # auth.set_access_token(twitAccessToken, twitAccessTokenSecret)
 # api = tweepy.API(auth, wait_on_rate_limit=True)
-#     # V2 Tweepy
+# # V2
 # client = tweepy.Client(
 #  access_token=twitAccessToken,
 #  access_token_secret=twitAccessTokenSecret,
