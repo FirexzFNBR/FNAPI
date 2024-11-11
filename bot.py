@@ -33,13 +33,15 @@ language = 'en'
 # PULL CURRENT FORTNITE VERSION
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
+pversion = '1.0.0'
 #=================================#
 def clean():
     if os.name == 'nt':
         os.system('cls')
 def menu():
     while True:
-        print(Fore.GREEN + '-- Welcome to FNAPI 1.0 (BETA) --')
+        print(Fore.GREEN + '-- Welcome to FNAPI 1.0.0 (BETA) --')
+        print(f'-- Current Program Version: {pversion} --')
         print('-- This program was made by @SpireFNBR and @FirexFNBR_ --')
         print('-- If have issues, Join FN-API server "https://discord.gg/ZwxMpEbgJX" for help --')
         print(f'-- Current Fortnite Version: {version} --')
@@ -62,6 +64,9 @@ def menu():
         print(Fore.CYAN + 'Generate cosmetics')
         print(Fore.WHITE + f'(9) Generate new cosmetics from {version}')
         print(Fore.WHITE + f'(10) Generate all cosmetics')
+        print("")
+        print(Fore.YELLOW + 'About')
+        print(Fore.WHITE + f'(01) View credits ')
         print("")
         print(Fore.RED + 'Exit')
         print(Fore.WHITE + "Press '0' to close FNAPI")
@@ -93,7 +98,9 @@ def menu():
             allcosmetics(filepath)                     
         elif option_choice == "0":
             print("Closing the program...")
-            break 
+            break
+        elif option_choice == "01":
+            about() 
         else:
             print("Invalid option, try again.")
             
@@ -183,12 +190,12 @@ def mnemonic(): # MNEMONIC
     response = requests.get(url6)
     response.raise_for_status()
     try:
-        conteudo = response.json() 
-        conteudo_formatado = json.dumps(conteudo, indent=4, ensure_ascii=False)
+        bruh = response.json() 
+        r = json.dumps(bruh, indent=4, ensure_ascii=False)
     except ValueError:
-        conteudo_formatado = response.text
-    with open(f"Mnemonic/{mnemonic}.json", "w", encoding="utf-8") as arquivo:
-        arquivo.write(conteudo_formatado)
+        r = response.text
+    with open(f"Mnemonic/{mnemonic}.json", "w", encoding="utf-8") as b:
+        b.write(r)
     
     print(Fore.GREEN + f"List saved in {mnemonic}.json")
     time.sleep(1)
@@ -297,6 +304,22 @@ def allcosmetics(filepath):
     print(Fore.GREEN + '\nExported successfully!')
     time.sleep(2)
     close()       
+
+
+def about():
+    clean()
+    print(Fore.CYAN + f'Current program version: {pversion}')
+    print("")
+    print(Fore.WHITE + 'FNAPI is a tool to easy leaks.')
+    print("")
+    print('This program uses api from "GMATRIXGAMES ( @GMatrixGames ), FLJP ( @LeakPlayer ) and Fortnite-API ( @Fortnite_API )"')
+    print("")
+    print('Credits to FirexFNBR and SpireFNBR, developers and owners of this program.')
+    print("")
+    print('New functions will be added in future versions.')
+    print("")
+    time.sleep(7)
+    close()
 
 def close():
     while True:
