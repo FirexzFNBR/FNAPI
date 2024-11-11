@@ -4,4 +4,4 @@ Made with python, FNAPI is a tool that exports some things about the game that a
 If there are any issues, talk to firex.pak or spirefnbr on Discord.
 If you have suggestions for the program, join our discord and send them to us: 
 
-# FNAPI was made by FirexFNBR ( https://x.com/FirexFNBR_ ) and SpireFNBR ( https://x.com/SpireFNBR ).
+# FNAPI was made by @FirexFNBR and @SpireFNBR.
