@@ -89,7 +89,6 @@ def menu():
         print("")
         print(Fore.CYAN + 'Others:')
         print(Fore.WHITE + '(17) Download youtube video (put link)')
-        print('(18) View video infos (put link)')
         print("")
         print(Fore.YELLOW + 'About:')
         print(Fore.WHITE + f'(About) View credits ')
