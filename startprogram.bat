@@ -22,5 +22,8 @@ if not exist "Lobby" (
 if not exist "Exports" (
     mkdir "Exports"
 )
+if not exist "News" (
+    mkdir "News"
+)
 py bot.py
 pause
