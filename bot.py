@@ -24,51 +24,44 @@ SOFTWARE.
 
 import os
 import requests
-import tweepy
-import PIL
-import colorama
-import datetime
 import json
-import sys
 import time
+import warnings
+import PIL
+import tweepy
 import shutil
-from PIL import Image, ImageFont, ImageDraw
-from datetime import date
+import datetime
+from yt_dlp import YoutubeDL
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from PIL import Image
+from urllib.parse import urlparse
+from colorama import init
+from colorama import Fore
 from datetime import datetime
-from colorama import *
 
+warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 #====== CONFIG ======#
-filepath = 'put_your_exports_path' # IT'S NECESSARY TO EXPORT NEW AND ALL COSMETICS.
+init(autoreset=True)
+filepath = 'Exports' # COSMETICS GENERATOR PATH
 language = 'en'
-#=========================#
-# # V1
-# auth = tweepy.OAuthHandler(twitAPIKey, twitAPISecretKey)
-# auth.set_access_token(twitAccessToken, twitAccessTokenSecret)
-# api = tweepy.API(auth, wait_on_rate_limit=True)
-# # V2
-# client = tweepy.Client(
-#  access_token=twitAccessToken,
-#  access_token_secret=twitAccessTokenSecret,
-#  consumer_key=twitAPIKey,
-#  consumer_secret=twitAPISecretKey,
-#  wait_on_rate_limit=True
-#  )
+apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
 #========================#
 # PULL CURRENT FORTNITE VERSION
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
-pversion = '1.0.0'
+pversion = '1.1.0'
 #=================================#
-def clean():
+def clear():
     if os.name == 'nt':
         os.system('cls')
 def menu():
     while True:
-        print(Fore.GREEN + '-- Welcome to FNAPI 1.0.0 (BETA) --')
-        print(f'-- Current Program Version: {pversion} --')
-        print('-- This program was made by @SpireFNBR and @FirexFNBR_ --')
-        print('-- If have issues, Join FN-API server "https://discord.gg/ZwxMpEbgJX" for help --')
-        print(f'-- Current Fortnite Version: {version} --')
+        clear()
+        print(Fore.GREEN + '-- Welcome to FNAPI 1.1.0 (BETA) --')
+        print(Fore.GREEN + f'-- Current Program Version: {pversion} --')
+        print(Fore.GREEN + '-- This program was made by @SpireFNBR and @FirexFNBR_ --')
+        print(Fore.GREEN + '-- If have issues, Join FN-API server "https://discord.gg/ZwxMpEbgJX" for help --')
+        print(Fore.GREEN + f'-- Current Fortnite Version: {version} --')
         print(Fore.WHITE + '\nChoose a option:')
         print("")
         print(Fore.CYAN + 'Map Generation:')
@@ -76,27 +69,37 @@ def menu():
         print("(2) Export map without POIs names (NOT WORKING ON v32.00!)")
         print("(3) Export CLYDE map image (Temporary Option)")
         print("")
-        print(Fore.CYAN + 'Paks Grabber')
+        print(Fore.CYAN + 'Paks Grabber:')
         print(Fore.WHITE + f'(4) Export paks info from {version}')
         print(f'(5) Exports a list of files related to the pak entered.')
         print("")
-        print(Fore.CYAN + 'API and Trackers')
+        print(Fore.CYAN + 'API and Trackers:')
         print(Fore.WHITE + '(6) Use mnemonic for view playlists')
         print("(7) Download the mapping for the version you want")
         print("(8) Download current lobby background")
+        print("(9) Export all news images")
+        print("(10) Export all Fortnite Crew")
+        print("(11) Export all Fortnite Seasons")
+        print("(12) Export all Maps")
+        print("(13) Export current Battle Pass")
+        print("(14) Export current Fortnite systems status and maintenances")
         print("")
-        print(Fore.CYAN + 'Generate cosmetics')
-        print(Fore.WHITE + f'(9) Generate new cosmetics from {version}')
-        print(Fore.WHITE + f'(10) Generate all cosmetics')
+        print(Fore.CYAN + 'Generate cosmetics:')
+        print(Fore.WHITE + f'(15) Generate new cosmetics from {version}')
+        print("(16) Generate all cosmetics")
         print("")
-        print(Fore.YELLOW + 'About')
-        print(Fore.WHITE + f'(01) View credits ')
+        print(Fore.CYAN + 'Others:')
+        print(Fore.WHITE + '(17) Download youtube video (put link)')
+        print('(18) View video infos (put link)')
         print("")
-        print(Fore.RED + 'Exit')
-        print(Fore.WHITE + "Press '0' to close FNAPI")
+        print(Fore.YELLOW + 'About:')
+        print(Fore.WHITE + f'(About) View credits ')
+        print("")
+        print(Fore.RED + 'Exit:')
+        print(Fore.WHITE + "(Exit) to close FNAPI")
         print(Fore.YELLOW)
         
-        option_choice = input(">> ")
+        option_choice = input(Fore.YELLOW + ">> ")
 
         time.sleep(2) 
 
@@ -117,21 +120,35 @@ def menu():
         elif option_choice == "8":
             lobby()
         elif option_choice == "9":
-            newcosmetics()
+            exportnews()
         elif option_choice == "10":
-            allcosmetics(filepath)                     
-        elif option_choice == "0":
+            crewexporter()
+        elif option_choice == "11":
+            seasonsexporter()
+        elif option_choice == "12":
+            mapslists()
+        elif option_choice == "13":
+            battlepass()
+        elif option_choice == "14":
+            fnstatus()    
+        elif option_choice == "15":
+            newcosmetics() 
+        elif option_choice == "16":
+            allcosmetics()
+        elif option_choice == "17":
+            ytvideo()                                                                  
+        elif option_choice == "Exit":
             print("Closing the program...")
             break
-        elif option_choice == "01":
+        elif option_choice == "About":
             about() 
         else:
             print("Invalid option, try again.")
             
 
 def mapwithPOI():  # MAP WITH POI NAMES GENERATOR
-    url = 'https://media.fortniteapi.io/images/map.png?showPOI=true'
-    r = requests.get(url, allow_redirects=True)
+    api = 'https://media.fortniteapi.io/images/map.png?showPOI=true'
+    r = requests.get(api, allow_redirects=True)
     open('map.png', 'wb').write(r.content)
     print(Fore.YELLOW + "Generating image with POIs names...")
     img = Image.open('map.png')
@@ -143,8 +160,8 @@ def mapwithPOI():  # MAP WITH POI NAMES GENERATOR
     close()
 
 def mapwithoutPOI():  # MAP WITHOUT NAME GENERATOR
-    url2 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FUI%2FApollo_Terrain_Minimap&raw=false'
-    r = requests.get(url2, allow_redirects=True)
+    api2 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FUI%2FApollo_Terrain_Minimap&raw=false'
+    r = requests.get(api2, allow_redirects=True)
     open('map.png', 'wb').write(r.content)
     print(Fore.YELLOW + "Generating image without POIs names...")
     img = Image.open('map.png')
@@ -156,8 +173,8 @@ def mapwithoutPOI():  # MAP WITHOUT NAME GENERATOR
     close()
 
 def clydemap(): # CLYDE MAP GENERATOR
- url3 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FClyde%2FTextures%2FWeek2_Adjusted&raw=false'
- r = requests.get(url3, allow_redirects=True)
+ api3 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FClyde%2FTextures%2FWeek2_Adjusted&raw=false'
+ r = requests.get(api3, allow_redirects=True)
  open('map.png', 'wb').write(r.content)
  print(Fore.YELLOW + "Generating CLYDE map image...")
  img = Image.open('map.png')
@@ -170,8 +187,8 @@ def clydemap(): # CLYDE MAP GENERATOR
 
 def pakgrabber():  # PAK GRABBER
     try:
-        url4 = f"https://fortnitecentral.genxgames.gg/api/v1/aes?version={version}"
-        response = requests.get(url4)
+        api4 = f"https://fortnitecentral.genxgames.gg/api/v1/aes?version={version}"
+        response = requests.get(api4)
         if response.status_code == 200:
             data = response.json()
             with open(f"Paks/{version} Paks.json", "w", encoding="utf-8") as archives:
@@ -188,16 +205,16 @@ def pakarchives(): # PAK ARCHIVES GRABBER
     pakNumber = input("Type the pak (example: '1010'): ")
     while not pakNumber.strip():
         pakNumber = input("Please type the pak: ")
-    url5 = f"https://fortnitecentral.genxgames.gg/api/v1/assets/dynamic/{pakNumber}"
-    response = requests.get(url5)
+    api5 = f"https://fortnitecentral.genxgames.gg/api/v1/assets/dynamic/{pakNumber}"
+    response = requests.get(api5)
     response.raise_for_status()
     try:
-        conteudo = response.json() 
-        conteudo_formatado = json.dumps(conteudo, indent=4, ensure_ascii=False)
+        bruh1 = response.json() 
+        bruh2 = json.dumps(bruh1, indent=4, ensure_ascii=False)
     except ValueError:
-        conteudo_formatado = response.text
+        bruh2 = response.text
     with open("Paks/PakList.json", "w", encoding="utf-8") as arquivo:
-        arquivo.write(conteudo_formatado)
+        arquivo.write(bruh2)
     
     print(Fore.GREEN + "List saved in PakList.json")
     time.sleep(1)
@@ -210,8 +227,8 @@ def mnemonic(): # MNEMONIC
     # namespace = input("Type the namespace (example: 'fn'): ")    
     # while not namespace.strip():
     #     namespace = input("Please enter your namespace: ")
-    url6 = f"https://fljpapi.onrender.com/api/links/fn/mnemonic/{mnemonic}"
-    response = requests.get(url6)
+    api6 = f"https://fljpapi.onrender.com/api/links/fn/mnemonic/{mnemonic}"
+    response = requests.get(api6)
     response.raise_for_status()
     try:
         bruh = response.json() 
@@ -227,8 +244,8 @@ def mnemonic(): # MNEMONIC
 
 def mappings(): # DOWNLOAD THE MAPPING ON ANY VERSION
     mapping = input("Which version you want to download: ")
-    url7 = f'https://fortnitecentral.genxgames.gg/api/v1/mappings?version={mapping}'
-    response = requests.get(url7)
+    api7 = f'https://fortnitecentral.genxgames.gg/api/v1/mappings?version={mapping}'
+    response = requests.get(api7)
     response.raise_for_status()
     data = response.json()
     mapping_url = data[0].get("url")
@@ -248,8 +265,8 @@ def mappings(): # DOWNLOAD THE MAPPING ON ANY VERSION
     close()
  
 def lobby(): # LOBBY BACKGROUND DOWNLOADER
-    url8 = 'https://fljpapi.onrender.com/api/lobby'
-    response = requests.get(url8)
+    api8 = 'https://fljpapi.onrender.com/api/lobby'
+    response = requests.get(api8)
     response.raise_for_status()
     data = response.json()
     backgrounds = data.get("backgrounds", {}).get("backgrounds", [])
@@ -269,6 +286,19 @@ def lobby(): # LOBBY BACKGROUND DOWNLOADER
 
 def newcosmetics():
     print('\nStarting bot...\n')
+    cosmetics_folder = f'{filepath}/New Cosmetics'
+    if os.path.exists(cosmetics_folder):
+        for filename in os.listdir(cosmetics_folder):
+            file_path = os.path.join(cosmetics_folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(Fore.RED + f'Erro ao excluir {file_path}: {e}')
+    else:
+        os.makedirs(cosmetics_folder)
     response = requests.get(f'https://fortnite-api.com/v2/cosmetics/new?lang={language}')
     data = response.json()
     if 'items' in data['data'] and 'br' in data['data']['items']:
@@ -280,25 +310,25 @@ def newcosmetics():
                 print(Fore.GREEN + f"Downloading image: {item['name']}")
                 r = requests.get(icon_url, allow_redirects=True)
                 try:
-                    os.makedirs(f'{filepath}/New Cosmetics', exist_ok=True)
-                    open(f'{filepath}/New Cosmetics/{item["id"]}_icon.png', 'wb').write(r.content)
+                    open(f'{cosmetics_folder}/{item["id"]}_icon.png', 'wb').write(r.content)
                     print(Fore.GREEN + 'Saved Image!\n')
                 except Exception as e:
-                    print(Fore.RED + f'Could not save icon image: {e}')
+                    print(Fore.RED + f'Could not save image: {e}')
             if 'smallIcon' in item['images']:
                 small_icon_url = item["images"]["smallIcon"]
                 print(Fore.GREEN + f"Downloading image: {item['name']}")
                 r = requests.get(small_icon_url, allow_redirects=True)
                 try:
-                    open(f'{filepath}/New Cosmetics/{item["id"]}_smallIcon.png', 'wb').write(r.content)
+                    open(f'{cosmetics_folder}/{item["id"]}_smallIcon.png', 'wb').write(r.content)
                     print(Fore.GREEN + 'Saved Image!\n')
                 except Exception as e:
-                    print(Fore.RED + f'Could not save smallIcon image: {e}')
+                    print(Fore.RED + f'Could not save image: {e}')
+    
     print(Fore.GREEN + '\nExported successfully!')
     time.sleep(2)
     close()
 
-def allcosmetics(filepath):
+def allcosmetics(filepath): # ALL COSMETICS GENERATOR
     print('\nStarting bot...\n')
     response = requests.get(f'https://fortnite-api.com/v2/cosmetics')
     data = response.json()
@@ -315,7 +345,7 @@ def allcosmetics(filepath):
                     open(f'{filepath}/All Cosmetics/{item["id"]}_icon.png', 'wb').write(r.content)
                     print(Fore.GREEN + 'Saved Image!\n')
                 except Exception as e:
-                    print(Fore.RED + f'Could not save icon image: {e}')
+                    print(Fore.RED + f'Could not save image: {e}')
             if 'smallIcon' in item['images']:
                 small_icon_url = item["images"]["smallIcon"]
                 print(Fore.WHITE + f"Downloading image: {item['name']}")
@@ -324,19 +354,193 @@ def allcosmetics(filepath):
                     open(f'{filepath}/All Cosmetics/{item["id"]}_smallIcon.png', 'wb').write(r.content)
                     print(Fore.GREEN + 'Saved Image!\n')
                 except Exception as e:
-                    print(Fore.RED + f'Could not save smallIcon image: {e}')
+                    print(Fore.RED + f'Could not save image: {e}')
     print(Fore.GREEN + '\nExported successfully!')
     time.sleep(2)
     close()       
 
+def exportnews(): # NEWS IMAGES EXPORTER (BATTLE ROYALE)
+    # language2 = input("Type your language: ")
+    # while not language2.strip():
+    #     language2 = input("Please enter your language: ")
+    api9 = f"https://fortnite-api.com/v2/news/br"
+    folder = "News"
+    os.makedirs(folder, exist_ok=True)
+    try:
+        response = requests.get(api9, verify=False)
+        response.raise_for_status()
+        data = response.json()
+        motds = data.get("data", {}).get("motds", [])
+        for index, item in enumerate(motds):
+            if isinstance(item, dict):
+                image_url = item.get("image")
+                if image_url:
+                    image_name = os.path.basename(urlparse(image_url).path)
+                    img_data = requests.get(image_url).content
+                    image_path = os.path.join(folder, image_name)
+                    with open(image_path, "wb") as img_file:
+                        img_file.write(img_data)
+                    print(Fore.GREEN + f"News image saved: {image_path}")
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+
+def crewexporter(): # ALL FORTNITE CREW EXPORTER
+ api10 = f"https://fortniteapi.io/v2/crew/history"
+ headers = {"Authorization": apikey}
+ response = requests.get(api10, headers=headers)
+ if response.status_code == 200:
+    with open("FortniteCrew.json", "w") as f:
+     json.dump(response.json(), f, indent=4)
+    print(Fore.GREEN + "Exported Fortnite Crew history.")
+ time.sleep(2)
+ close()
+def seasonsexporter(): #ALL SEASONS EXPORTER
+ api11 = f"https://fortniteapi.io/v1/seasons/list"
+ headers = {"Authorization": apikey}
+ response = requests.get(api11, headers=headers)
+ if response.status_code == 200:
+    with open("FortniteSeasons.json", "w") as f:
+     json.dump(response.json(), f, indent=4)
+    print(Fore.GREEN + "Exported Fortnite Seasons.")
+ time.sleep(2)
+ close()
+
+def mapslists(): # ALL MAPS EXPORTER
+ api12 = f"https://fortniteapi.io/v1/maps/list?language={language}"
+ headers = {"Authorization": apikey}
+ response = requests.get(api12, headers=headers)
+ if response.status_code == 200:
+    with open("FortniteMaps.json", "w") as f:
+     json.dump(response.json(), f, indent=4)
+    print(Fore.GREEN + "Exported Fortnite Maps Lists.")
+ time.sleep(2)
+ close()
+
+def battlepass(): # CURRENT BATTLE PASS EXPORTER
+ api13 = f"https://fortniteapi.io/v2/battlepass?language={language}&season=current"
+ headers = {"Authorization": apikey}
+ response = requests.get(api13, headers=headers)
+ if response.status_code == 200:
+    with open("FortniteBP.json", "w") as f:
+     json.dump(response.json(), f, indent=4)
+    print(Fore.GREEN + "Exported current Fortnite Battle Passe.")
+ time.sleep(2)
+ close() 
+
+def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
+    print(Fore.CYAN + 'Starting Fortnite Status Exporter...')
+    components_url = "https://status.epicgames.com/api/v2/components.json"
+    maintenance_url = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
+    incidents_url = "https://status.epicgames.com/api/v2/incidents.json"
+    response_components = requests.get(components_url)
+    response_maintenance = requests.get(maintenance_url)
+    response_incidents = requests.get(incidents_url)
+    fndt = {}
+
+    if response_components.status_code == 200:
+        components_data = response_components.json()
+        fnmcp = [
+            {
+                'id': component['id'],
+                'name': component['name'],
+                'status': component['status'],
+                'created_at': component['created_at'],
+                'updated_at': component['updated_at']
+            }
+            for component in components_data['components'] if 'Fortnite' in component['name']
+        ]
+        fndt['components'] = fnmcp
+    if response_maintenance.status_code == 200:
+        maintenance_info = response_maintenance.json()
+        scheduled_maintenances = []
+        current_time = datetime.utcnow()
+        if 'scheduled_maintenances' in maintenance_info and maintenance_info['scheduled_maintenances']:
+            for maintenance in maintenance_info['scheduled_maintenances']:
+                maintenance_time = datetime.strptime(maintenance['scheduled_for'], "%Y-%m-%dT%H:%M:%S.%fZ")
+                
+                if maintenance_time > current_time and maintenance['incident_updates']:
+                    updates = [update['body'] for update in maintenance['incident_updates']]
+                    combined_message = "\n\n".join(updates) if updates else "no maintenances."
+                    
+                    maintenance_details = {
+                        'name': maintenance['name'],
+                        'status': maintenance['status'],
+                        'scheduled_for': maintenance['scheduled_for'],
+                        'scheduled_until': maintenance['scheduled_until'],
+                        'description': combined_message
+                    }
+                    scheduled_maintenances.append(maintenance_details)
+            fndt['scheduled_maintenance'] = scheduled_maintenances or [{
+                'name': 'Scheduled Maintenance',
+                'status': 'none',
+                'description': 'No scheduled maintenances.'
+            }]
+        else:
+            fndt['scheduled_maintenance'] = [{
+                'name': 'Scheduled Maintenance',
+                'status': 'none',
+                'description': 'No scheduled maintenances.'
+            }]
+    
+    if response_incidents.status_code == 200:
+        incidents_data = response_incidents.json()
+        
+        active_incidents = [
+            {
+                'name': incident['name'],
+                'updates': [
+                    {
+                        'status': update['status'],
+                        'body': update['body'],
+                        'created_at': update['created_at']
+                    }
+                    for update in incident['incident_updates']
+                ]
+            }
+            for incident in incidents_data['incidents'] 
+            if 'Fortnite' in incident['name'] and incident['status'] in ['investigating', 'identified', 'monitoring']
+        ]
+        
+        if active_incidents:
+            fndt['current_incident'] = active_incidents[0]
+    
+    with open('FNStatus.json', 'w') as json_file:
+        json.dump(fndt, json_file, indent=4)
+    
+    print(Fore.GREEN + "Exported status in: 'FNStatus.json'.")
+    time.sleep(2)
+    close()
+    fnstatus()
+
+def ytvideo(): # YOUTUBE VIDEO DOWNLOADER
+    link = input("Type youtube video link: ")
+    ydl_opts = {
+        'format': 'bestvideo+bestaudio/best',
+        'outtmpl': '%(title)s.%(ext)s',
+        'merge_output_format': 'mp4',
+        'postprocessors': [{
+            'key': 'FFmpegVideoConvertor',
+            'preferedformat': 'mp4'
+        }],
+    }
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(link, download=True)
+            print(f"Download completed: {info['title']}")
+    except Exception as e:
+        print("An error has been occurred:", e)
+    close()        
+    ytvideo()    
 
 def about():
-    clean()
+    clear()
     print(Fore.CYAN + f'Current program version: {pversion}')
     print("")
     print(Fore.WHITE + 'FNAPI is a tool to easy leaks.')
     print("")
-    print('This program uses api from "GMATRIXGAMES ( @GMatrixGames ), FLJP ( @LeakPlayer ) and Fortnite-API ( @Fortnite_API )"')
+    print('This program uses api from "GMATRIXGAMES ( @GMatrixGames ), FLJP ( @LeakPlayer ), Fortnite-API ( https://fortnite-api.com ) and FortniteAPI.io ( https://fortniteapi.io )"')
+    print("")
+    print('This program was inspired (design) in AutoLeak, by Fevers .')
     print("")
     print('Credits to FirexFNBR and SpireFNBR, developers and owners of this program.')
     print("")
@@ -347,19 +551,20 @@ def about():
 
 def close():
     while True:
-        user_input = input(Fore.CYAN + "Do you want to go back to the menu? (y/n): ").lower()
-        if user_input == 'y':
+        option = input(Fore.CYAN + "Do you want to go back to menu? (y/n): ").lower()
+        if option == 'y':
             print('Sure! Returning to the menu...')
             time.sleep(2)
-            clean() 
+            clear()
+            time.sleep(1)
             menu()
             break
-        elif user_input == 'n':
+        elif option == 'n':
             print("Sure! Closing the program...")
             time.sleep(2)
             exit()
         else:
-            print("Invalid option. Y to return to the menu or N to exit the program.")     
+            print("Invalid option. Type 'y' to return to menu or 'n' to exit.")
 
 if __name__ == "__main__":
     menu()
