@@ -28,7 +28,6 @@ import json
 import time
 import warnings
 import PIL
-import tweepy
 import shutil
 import datetime
 from yt_dlp import YoutubeDL
