@@ -1,5 +1,4 @@
 requests
-Pillow
-colorama
 DateTime
-tweepy
+yt-dlp
+urllib3
