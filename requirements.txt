@@ -2,3 +2,4 @@ requests
 DateTime
 yt-dlp
 urllib3
+Pillow
