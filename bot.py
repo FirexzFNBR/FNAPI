@@ -427,12 +427,12 @@ def battlepass(): # CURRENT BATTLE PASS EXPORTER
 
 def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
     print(Fore.CYAN + 'Starting Fortnite Status Exporter...')
-    components_url = "https://status.epicgames.com/api/v2/components.json"
-    maintenance_url = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
-    incidents_url = "https://status.epicgames.com/api/v2/incidents.json"
-    response_components = requests.get(components_url)
-    response_maintenance = requests.get(maintenance_url)
-    response_incidents = requests.get(incidents_url)
+    url1 = "https://status.epicgames.com/api/v2/components.json"
+    url2 = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
+    url3 = "https://status.epicgames.com/api/v2/incidents.json"
+    response_components = requests.get(url1)
+    response_maintenance = requests.get(url2)
+    response_incidents = requests.get(url3)
     fndt = {}
 
     if response_components.status_code == 200:
