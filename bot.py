@@ -582,29 +582,29 @@ def encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret): # ENCRYPTE
     close()
     encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)
 
-def twvideo():  # TWITTER VIDEO DOWNLOADER
-    link = input(Fore.CYAN + "Type Twitter video link: ")
-    if "x.com" not in link and "twitter.com" not in link:
-        print(Fore.RED + "This link is not valid.")
-        return
-    ydl_opts = {
-        'format': 'bestvideo+bestaudio/best',
-        'outtmpl': '%(title)s.%(ext)s',
-        'merge_output_format': 'mp4',
-        'cookiefile': 'cookies.txt',
-    }
+# def twvideo():  # TWITTER VIDEO DOWNLOADER
+#     link = input(Fore.CYAN + "Type Twitter video link: ")
+#     if "x.com" not in link and "twitter.com" not in link:
+#         print(Fore.RED + "This link is not valid.")
+#         return
+#     ydl_opts = {
+#         'format': 'bestvideo+bestaudio/best',
+#         'outtmpl': '%(title)s.%(ext)s',
+#         'merge_output_format': 'mp4',
+#         'cookiefile': 'cookies.txt',
+#     }
 
-    try:
-        with YoutubeDL(ydl_opts) as ydl:
-            print(Fore.YELLOW + "Downloading video...")
-            ydl.download([link])
-            print(Fore.GREEN + "Downloaded!")
-    except Exception as e:
-        print(Fore.RED + f"An error occurred: {e}")
-        print(Fore.YELLOW + "Try updating yt-dlp or checking the link validity.")
-        twvideo()
-        close()
-        time.sleep(2)
+#     try:
+#         with YoutubeDL(ydl_opts) as ydl:
+#             print(Fore.YELLOW + "Downloading video...")
+#             ydl.download([link])
+#             print(Fore.GREEN + "Downloaded!")
+#     except Exception as e:
+#         print(Fore.RED + f"An error occurred: {e}")
+#         print(Fore.YELLOW + "Try updating yt-dlp or checking the link validity.")
+#         twvideo()
+#         close()
+#         time.sleep(2)
 
 def cosmeticname():  # EXPORT COSMETIC BY ID OR NAME
  clear()
