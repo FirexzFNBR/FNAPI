@@ -441,14 +441,13 @@ def battlepass(): # CURRENT BATTLE PASS EXPORTER
 
 def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
     print(Fore.CYAN + 'Starting Fortnite Status Exporter...')
-    url1 = "https://status.epicgames.com/api/v2/components.json"
-    url2 = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
-    url3 = "https://status.epicgames.com/api/v2/incidents.json"
+    status1 = "https://status.epicgames.com/api/v2/components.json"
+    status2 = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
+    status3 = "https://status.epicgames.com/api/v2/incidents.json"
     response_components = requests.get(url1)
     response_maintenance = requests.get(url2)
     response_incidents = requests.get(url3)
     fndt = {}
-
     if response_components.status_code == 200:
         components_data = response_components.json()
         fnmcp = [
@@ -462,6 +461,7 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
             for component in components_data['components'] if 'Fortnite' in component['name']
         ]
         fndt['components'] = fnmcp
+        
     if response_maintenance.status_code == 200:
         maintenance_info = response_maintenance.json()
         scheduled_maintenances = []
@@ -493,7 +493,6 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
                 'status': 'none',
                 'description': 'No scheduled maintenances.'
             }]
-    
     if response_incidents.status_code == 200:
         incidents_data = response_incidents.json()
         
@@ -512,10 +511,8 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
             for incident in incidents_data['incidents'] 
             if 'Fortnite' in incident['name'] and incident['status'] in ['investigating', 'identified', 'monitoring']
         ]
-        
         if active_incidents:
             fndt['current_incident'] = active_incidents[0]
-    
     with open('FNStatus.json', 'w') as json_file:
         json.dump(fndt, json_file, indent=4)
     
@@ -523,7 +520,7 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
     time.sleep(2)
     close()
     fnstatus()
-
+    
 def ytvideo(): # YOUTUBE VIDEO DOWNLOADER
     link = input("Type youtube video link: ")
     ydl_opts = {
