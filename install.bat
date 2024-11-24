@@ -11,5 +11,5 @@ echo Downloading requirements.
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
-echo Done! Now open 'startprogram' to use FNAPI 1.0
+echo Done! Now open 'startprogram' to use FNAPI 1.2.1
 pause
