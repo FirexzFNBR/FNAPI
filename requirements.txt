@@ -3,3 +3,4 @@ DateTime
 yt-dlp
 urllib3
 Pillow
+tweepy
