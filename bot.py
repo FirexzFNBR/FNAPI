@@ -30,6 +30,7 @@ import warnings
 import PIL
 import shutil
 import datetime
+import tweepy
 from yt_dlp import YoutubeDL
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from PIL import Image
@@ -42,13 +43,17 @@ warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 #====== CONFIG ======#
 init(autoreset=True)
 filepath = 'Exports' # COSMETICS GENERATOR PATH
-language = 'en'
+language = 'pt-BR' # PUT YOUR LANGUAGE
 apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
-#========================#
-# PULL CURRENT FORTNITE VERSION
+#=========AUTH===========#
+apiKey = 'zW0gVY9jJC3Lv6NcBCx9Gc8lt'
+apiSecret = 'ecvCt8AoB9Ng4AHDtIkL4Czd11gujDrW4hS7pfMih1O21E8zUM'
+accessToken = '1343189385890717698-yUHyZNFxhpPobaLDFcZCck3yNDhnMr'
+accessTokenSecret = 'USxEwudeHvgGrUph1MzTjjEsVGsXKbViVN6WeDVKhqlcM'
+#=== PULL CURRENT FORTNITE VERSION ===#
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
-pversion = '1.1.0'
+fversion = '1.2.0'
 #=================================#
 def clear():
     if os.name == 'nt':
@@ -56,8 +61,8 @@ def clear():
 def menu():
     while True:
         clear()
-        print(Fore.GREEN + '-- Welcome to FNAPI 1.1.0 (BETA) --')
-        print(Fore.GREEN + f'-- Current Program Version: {pversion} --')
+        print(Fore.GREEN + f'-- Welcome to FNAPI (BETA) --')
+        print(Fore.GREEN + f'-- Current Program Version: {fversion} --')
         print(Fore.GREEN + '-- This program was made by @SpireFNBR and @FirexFNBR_ --')
         print(Fore.GREEN + '-- If have issues, Join FN-API server "https://discord.gg/ZwxMpEbgJX" for help --')
         print(Fore.GREEN + f'-- Current Fortnite Version: {version} --')
@@ -65,14 +70,14 @@ def menu():
         print("")
         print(Fore.CYAN + 'Map Generation:')
         print(Fore.WHITE + "(1) Export map with POIs names (API takes too long to update)")
-        print("(2) Export map without POIs names (NOT WORKING ON v32.00!)")
+        print("(2) Export map without POIs names (NOT WORKING ON v32.10 and 32.11!)")
         print("(3) Export CLYDE map image (Temporary Option)")
         print("")
         print(Fore.CYAN + 'Paks Grabber:')
         print(Fore.WHITE + f'(4) Export paks info from {version}')
         print(f'(5) Exports a list of files related to the pak entered.')
         print("")
-        print(Fore.CYAN + 'API and Trackers:')
+        print(Fore.CYAN + 'API:')
         print(Fore.WHITE + '(6) Use mnemonic for view playlists')
         print("(7) Download the mapping for the version you want")
         print("(8) Download current lobby background")
@@ -81,14 +86,19 @@ def menu():
         print("(11) Export all Fortnite Seasons")
         print("(12) Export all Maps")
         print("(13) Export current Battle Pass")
-        print("(14) Export current Fortnite systems status and maintenances")
+        print("(14) Export current Fortnite status")
         print("")
         print(Fore.CYAN + 'Generate cosmetics:')
         print(Fore.WHITE + f'(15) Generate new cosmetics from {version}')
         print("(16) Generate all cosmetics")
+        print(Fore.GREEN + "(17) Generate any cosmetic by name - (NEW)")
+        print("")
+        print(Fore.CYAN + 'Trackers:')
+        print(Fore.GREEN + f'(18) Tweet encrypted paks on {version} - (NEW)')
         print("")
         print(Fore.CYAN + 'Others:')
-        print(Fore.WHITE + '(17) Download youtube video (put link)')
+        print(Fore.WHITE + '(19) Download youtube video')
+        print(Fore.GREEN + '(20) Download twitter video - (NEW)')
         print("")
         print(Fore.YELLOW + 'About:')
         print(Fore.WHITE + f'(About) View credits ')
@@ -98,7 +108,6 @@ def menu():
         print(Fore.YELLOW)
         
         option_choice = input(Fore.YELLOW + ">> ")
-
         time.sleep(2) 
 
         if option_choice == "1":
@@ -132,9 +141,15 @@ def menu():
         elif option_choice == "15":
             newcosmetics() 
         elif option_choice == "16":
-            allcosmetics()
+            allcosmetics(filepath) 
         elif option_choice == "17":
-            ytvideo()                                                                  
+            cosmeticname()          
+        elif option_choice == "18":
+            encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)        
+        elif option_choice == "19":
+            ytvideo()   
+        elif option_choice == "20":
+            twvideo()                                                                         
         elif option_choice == "Exit":
             print("Closing the program...")
             break
@@ -143,9 +158,8 @@ def menu():
         else:
             print("Invalid option, try again.")
             
-
 def mapwithPOI():  # MAP WITH POI NAMES GENERATOR
-    api = 'https://media.fortniteapi.io/images/map.png?showPOI=true'
+    api = f'https://fortnite-api.com/images/map_{language}.png'
     r = requests.get(api, allow_redirects=True)
     open('map.png', 'wb').write(r.content)
     print(Fore.YELLOW + "Generating image with POIs names...")
@@ -168,16 +182,16 @@ def mapwithoutPOI():  # MAP WITHOUT NAME GENERATOR
     os.remove('map.png')
     time.sleep(1)
     print(Fore.GREEN + "Generated!")
-    close()
+    close()    
 
 def clydemap(): # CLYDE MAP GENERATOR
- api3 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FClyde%2FTextures%2FWeek2_Adjusted&raw=false'
+ api3 = 'https://fortnitecentral.genxgames.gg/api/v1/export?path=FortniteGame%2FContent%2FAthena%2FApollo%2FMaps%2FClyde%2FTextures%2FWeek3_Adjusted&raw=false'
  r = requests.get(api3, allow_redirects=True)
  open('map.png', 'wb').write(r.content)
  print(Fore.YELLOW + "Generating CLYDE map image...")
  img = Image.open('map.png')
  img = img.resize((1200, 1200), PIL.Image.LANCZOS)
- img.save('Maps/Week2_Adjusted.png')
+ img.save('Maps/Week3_Adjusted.png')
  os.remove('map.png')
  time.sleep(1)
  print(Fore.GREEN + "Generated!")
@@ -200,7 +214,7 @@ def pakgrabber():  # PAK GRABBER
         close()
 
 def pakarchives(): # PAK ARCHIVES GRABBER
-    pakNumber = input("Type the pak (example: '1010'): ")
+    pakNumber = input("Put the pak (example: '1010'): ")
     while not pakNumber.strip():
         pakNumber = input("Please type the pak: ")
     api5 = f"https://fortnitecentral.genxgames.gg/api/v1/assets/dynamic/{pakNumber}"
@@ -219,7 +233,7 @@ def pakarchives(): # PAK ARCHIVES GRABBER
     close()
 
 def mnemonic(): # MNEMONIC
-    mnemonic = input("Type the playlist (example: 'playlist_defaultsolo'): ")
+    mnemonic = input("Put the playlist (example: 'playlist_defaultsolo'): ")
     while not mnemonic.strip():
         mnemonic = input("Please enter your playlist: ")
     # namespace = input("Type the namespace (example: 'fn'): ")    
@@ -463,8 +477,8 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
                     maintenance_details = {
                         'name': maintenance['name'],
                         'status': maintenance['status'],
-                        'scheduled_for': maintenance['scheduled_for'],
-                        'scheduled_until': maintenance['scheduled_until'],
+                        'scheduled_start': maintenance['scheduled_for'],
+                        'scheduled_end': maintenance['scheduled_until'],
                         'description': combined_message
                     }
                     scheduled_maintenances.append(maintenance_details)
@@ -528,11 +542,133 @@ def ytvideo(): # YOUTUBE VIDEO DOWNLOADER
     except Exception as e:
         print("An error has been occurred:", e)
     close()        
-    ytvideo()    
+    ytvideo()  
+
+def encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret): # ENCRYPTED PAKS TWEET
+    print(Fore.YELLOW + "Starting bot...")
+    time.sleep(1)
+    
+    api14 = "https://fortnitecentral.genxgames.gg/api/v1/aes"
+    response = requests.get(api14)
+    data = response.json()['unloaded']
+
+    print(Fore.YELLOW + "Loading API...")
+    time.sleep(1)
+    post = f"All encrypted paks on {version}:\n\n"
+    for item in data:
+        name = item['name']
+        name = name.replace("-WindowsClient.utoc", "")
+        name = name.replace("chunk", "")
+        bruh1 = item['fileCount']
+        bruh2 = item['size']['formatted']
+        bruh3 = "Yes" if item['hasHighResTextures'] else "No"
+        post += f"{name} | Files: {bruh1} | Size: {bruh2} | HD Textures: {bruh3}\n"
+    post += "\n#Fortnite"
+    print(Fore.GREEN + "Loaded API!")
+    time.sleep(1)
+
+    print(Fore.YELLOW + "Authenticating Twitter...")
+    time.sleep(1)
+    twitter_client = tweepy.Client(
+        consumer_key=apiKey,
+        consumer_secret=apiSecret,
+        access_token=accessToken,
+        access_token_secret=accessTokenSecret
+    )
+    print(Fore.GREEN + "Twitter client authenticated!")
+
+    print(Fore.YELLOW + "Creating tweet...")
+    time.sleep(1)
+    twitter_client.create_tweet(text=post)
+    print(Fore.GREEN + "Tweet created!")
+    print(Fore.RED + "Stopping the bot...")
+    close()
+    encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)
+
+def twvideo():  # TWITTER VIDEO DOWNLOADER
+    link = input(Fore.CYAN + "Type Twitter video link: ")
+    if "x.com" not in link and "twitter.com" not in link:
+        print(Fore.RED + "This link is not valid.")
+        return
+    ydl_opts = {
+        'format': 'bestvideo+bestaudio/best',
+        'outtmpl': '%(title)s.%(ext)s',
+        'merge_output_format': 'mp4',
+        'cookiefile': 'cookies.txt',
+    }
+
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            print(Fore.YELLOW + "Downloading video...")
+            ydl.download([link])
+            print(Fore.GREEN + "Downloaded!")
+    except Exception as e:
+        print(Fore.RED + f"An error occurred: {e}")
+        print(Fore.YELLOW + "Try updating yt-dlp or checking the link validity.")
+        twvideo()
+        close()
+        time.sleep(2)
+
+def cosmeticname():  # EXPORT COSMETIC BY ID OR NAME
+ clear()
+ print(Fore.CYAN + "How do you want to export? (name or id)")
+ choice = input(Fore.YELLOW + ">> ")
+
+ if choice == "name": # EXPORT BY NAME
+    path = "Exports"
+    os.makedirs(path, exist_ok=True)
+    name = input("Enter cosmetic name: ")
+    api15 = f"https://fortnite-api.com/v2/cosmetics/br/search?name={name}&language=en"
+    try:
+        response = requests.get(api15).json()
+        if response.get("status") == 200 and "data" in response:
+            cosmetic_id = response["data"].get("id", "unknown")
+
+            def bruh(obj):
+                if isinstance(obj, str) and obj.startswith("https://fortnite-api.com/images/cosmetics/br/"):
+                    file_path = os.path.join(path, f"{cosmetic_id}_{os.path.basename(obj)}")
+                    with open(file_path, "wb") as f:
+                        f.write(requests.get(obj).content)
+                    print(Fore.GREEN + f"Exported: {file_path}")
+                elif isinstance(obj, (list, dict)):
+                    for v in (obj.values() if isinstance(obj, dict) else obj):
+                        bruh(v)
+            bruh(response["data"])
+        else:
+            print(Fore.RED + "No data found for the provided name.")            
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    close()     
+
+ if choice == "id": # EXPORT BY ID
+    path = "Exports"
+    os.makedirs(path, exist_ok=True)
+    id = input("Enter cosmetic id (all in small caps): ")
+    api16 = f"https://fortnite-api.com/v2/cosmetics/br/search?id={id}&language=en"
+    try:
+        response = requests.get(api16).json()
+        if response.get("status") == 200 and "data" in response:
+            cosmetic_id = response["data"].get("id", "unknown")
+
+            def bruh(obj):
+                if isinstance(obj, str) and obj.startswith("https://fortnite-api.com/images/cosmetics/br/"):
+                    file_path = os.path.join(path, f"{cosmetic_id}_{os.path.basename(obj)}")
+                    with open(file_path, "wb") as f:
+                        f.write(requests.get(obj).content)
+                    print(Fore.GREEN + f"Exported: {file_path}")
+                elif isinstance(obj, (list, dict)):
+                    for v in (obj.values() if isinstance(obj, dict) else obj):
+                        bruh(v)
+            bruh(response["data"])
+        else:
+            print(Fore.RED + "No data found for the provided name.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    close()     
 
 def about():
     clear()
-    print(Fore.CYAN + f'Current program version: {pversion}')
+    print(Fore.CYAN + f'Current program version: {fversion}')
     print("")
     print(Fore.WHITE + 'FNAPI is a tool to easy leaks.')
     print("")
@@ -552,7 +688,7 @@ def close():
         option = input(Fore.CYAN + "Do you want to go back to menu? (y/n): ").lower()
         if option == 'y':
             print('Sure! Returning to the menu...')
-            time.sleep(2)
+            time.sleep(1)
             clear()
             time.sleep(1)
             menu()
