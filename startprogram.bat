@@ -26,4 +26,3 @@ if not exist "News" (
     mkdir "News"
 )
 py bot.py
-pause
