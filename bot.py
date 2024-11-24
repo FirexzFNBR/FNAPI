@@ -46,10 +46,10 @@ filepath = 'Exports' # COSMETICS GENERATOR PATH
 language = 'pt-BR' # PUT YOUR LANGUAGE
 apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
 #=========AUTH===========#
-apiKey = 'zW0gVY9jJC3Lv6NcBCx9Gc8lt'
-apiSecret = 'ecvCt8AoB9Ng4AHDtIkL4Czd11gujDrW4hS7pfMih1O21E8zUM'
-accessToken = '1343189385890717698-yUHyZNFxhpPobaLDFcZCck3yNDhnMr'
-accessTokenSecret = 'USxEwudeHvgGrUph1MzTjjEsVGsXKbViVN6WeDVKhqlcM'
+apiKey = 'put_your_key'
+apiSecret = 'puy_your_key'
+accessToken = 'put_your_token'
+accessTokenSecret = 'put_your_token'
 #=== PULL CURRENT FORTNITE VERSION ===#
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
