@@ -1,5 +1,5 @@
 # FNAPI
-Made with python, FNAPI is a tool that exports some things about the game that are used via an API, its current version is 1.2.0 and we will update it over time.
+Made with python, FNAPI is a tool that exports some things about the game that are used via an API, its current version is 1.2.1 and we will update it over time.
 
 It's necessary python 3.10.11 or higher. 
 
