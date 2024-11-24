@@ -10,11 +10,11 @@ If you have suggestions for the program, join our discord and send them to us:
 
 Requirements:
 
-requests
-DateTime
-yt-dlp
-urllib3
-Pillow
+- requests
+- DateTime
+- yt-dlp
+- urllib3
+- Pillow
 
 
 WARNING: I don't teach you how to configure your twitter api, make yourself and config yourself.
