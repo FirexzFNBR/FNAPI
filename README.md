@@ -15,6 +15,6 @@ Requirements:
 - yt-dlp
 - urllib3
 - Pillow
-
+- tweepy
 
 WARNING: I don't teach you how to configure your twitter api, make yourself and config yourself.
