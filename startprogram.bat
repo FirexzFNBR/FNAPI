@@ -1,5 +1,5 @@
 @echo off
-title FNAPI 1.0 (BETA)
+title FNAPI 1.2 (BETA)
 if not exist "Maps" (
     mkdir "Maps"
 )
