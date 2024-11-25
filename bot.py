@@ -46,14 +46,14 @@ filepath = 'Exports' # COSMETICS GENERATOR PATH
 language = 'pt-BR' # PUT YOUR LANGUAGE
 apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
 #=========AUTH===========#
-apiKey = 'put_your_key'
-apiSecret = 'puy_your_key'
-accessToken = 'put_your_token'
-accessTokenSecret = 'put_your_token'
+apiKey = 'zW0gVY9jJC3Lv6NcBCx9Gc8lt'
+apiSecret = 'ecvCt8AoB9Ng4AHDtIkL4Czd11gujDrW4hS7pfMih1O21E8zUM'
+accessToken = '1343189385890717698-yUHyZNFxhpPobaLDFcZCck3yNDhnMr'
+accessTokenSecret = 'USxEwudeHvgGrUph1MzTjjEsVGsXKbViVN6WeDVKhqlcM'
 #=== PULL CURRENT FORTNITE VERSION ===#
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
-fversion = '1.2.0'
+fversion = '1.2.2'
 #=================================#
 def clear():
     if os.name == 'nt':
@@ -98,7 +98,6 @@ def menu():
         print("")
         print(Fore.CYAN + 'Others:')
         print(Fore.WHITE + '(19) Download youtube video')
-        print(Fore.GREEN + '(20) Download twitter video - (NEW)')
         print("")
         print(Fore.YELLOW + 'About:')
         print(Fore.WHITE + f'(About) View credits ')
@@ -147,9 +146,7 @@ def menu():
         elif option_choice == "18":
             encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)        
         elif option_choice == "19":
-            ytvideo()   
-        elif option_choice == "20":
-            twvideo()                                                                         
+            ytvideo()                                                                       
         elif option_choice == "Exit":
             print("Closing the program...")
             break
@@ -372,10 +369,10 @@ def allcosmetics(filepath): # ALL COSMETICS GENERATOR
     close()       
 
 def exportnews(): # NEWS IMAGES EXPORTER (BATTLE ROYALE)
-    # language2 = input("Type your language: ")
-    # while not language2.strip():
-    #     language2 = input("Please enter your language: ")
-    api9 = f"https://fortnite-api.com/v2/news/br"
+    language2 = input("Type your language: ")
+    while not language2.strip():
+        language2 = input("Please enter your language: ")
+    api9 = f"https://fljpapi.onrender.com/api/news?platform=Windows&language={language2}&country=US&battlepass=true&battlepassLevel=100&tags=Product.BR"
     folder = "News"
     os.makedirs(folder, exist_ok=True)
     try:
@@ -406,6 +403,7 @@ def crewexporter(): # ALL FORTNITE CREW EXPORTER
     print(Fore.GREEN + "Exported Fortnite Crew history.")
  time.sleep(2)
  close()
+
 def seasonsexporter(): #ALL SEASONS EXPORTER
  api11 = f"https://fortniteapi.io/v1/seasons/list"
  headers = {"Authorization": apikey}
@@ -441,13 +439,14 @@ def battlepass(): # CURRENT BATTLE PASS EXPORTER
 
 def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
     print(Fore.CYAN + 'Starting Fortnite Status Exporter...')
-    status1 = "https://status.epicgames.com/api/v2/components.json"
-    status2 = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
-    status3 = "https://status.epicgames.com/api/v2/incidents.json"
+    url1 = "https://status.epicgames.com/api/v2/components.json"
+    url2 = "https://status.epicgames.com/api/v2/scheduled-maintenances/upcoming.json"
+    url3 = "https://status.epicgames.com/api/v2/incidents.json"
     response_components = requests.get(url1)
     response_maintenance = requests.get(url2)
     response_incidents = requests.get(url3)
     fndt = {}
+
     if response_components.status_code == 200:
         components_data = response_components.json()
         fnmcp = [
@@ -461,7 +460,6 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
             for component in components_data['components'] if 'Fortnite' in component['name']
         ]
         fndt['components'] = fnmcp
-        
     if response_maintenance.status_code == 200:
         maintenance_info = response_maintenance.json()
         scheduled_maintenances = []
@@ -493,6 +491,7 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
                 'status': 'none',
                 'description': 'No scheduled maintenances.'
             }]
+    
     if response_incidents.status_code == 200:
         incidents_data = response_incidents.json()
         
@@ -511,8 +510,10 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
             for incident in incidents_data['incidents'] 
             if 'Fortnite' in incident['name'] and incident['status'] in ['investigating', 'identified', 'monitoring']
         ]
+        
         if active_incidents:
             fndt['current_incident'] = active_incidents[0]
+    
     with open('FNStatus.json', 'w') as json_file:
         json.dump(fndt, json_file, indent=4)
     
@@ -520,7 +521,7 @@ def fnstatus(): # EXPORT CURRENT EPIC GAMES/FORTNITE STATUS
     time.sleep(2)
     close()
     fnstatus()
-    
+
 def ytvideo(): # YOUTUBE VIDEO DOWNLOADER
     link = input("Type youtube video link: ")
     ydl_opts = {
