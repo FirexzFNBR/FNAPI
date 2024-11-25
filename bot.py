@@ -32,9 +32,10 @@ import shutil
 import datetime
 import tweepy
 from yt_dlp import YoutubeDL
+from io import BytesIO
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import hashlib
 from PIL import Image
-from urllib.parse import urlparse
 from colorama import init
 from colorama import Fore
 from datetime import datetime
@@ -43,7 +44,7 @@ warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 #====== CONFIG ======#
 init(autoreset=True)
 filepath = 'Exports' # COSMETICS GENERATOR PATH
-language = 'pt-BR' # PUT YOUR LANGUAGE
+language = 'en' # PUT YOUR LANGUAGE
 apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
 #=========AUTH===========#
 apiKey = 'zW0gVY9jJC3Lv6NcBCx9Gc8lt'
@@ -368,30 +369,40 @@ def allcosmetics(filepath): # ALL COSMETICS GENERATOR
     time.sleep(2)
     close()       
 
-def exportnews(): # NEWS IMAGES EXPORTER (BATTLE ROYALE)
-    language2 = input("Type your language: ")
-    while not language2.strip():
-        language2 = input("Please enter your language: ")
-    api9 = f"https://fljpapi.onrender.com/api/news?platform=Windows&language={language2}&country=US&battlepass=true&battlepassLevel=100&tags=Product.BR"
+def exportnews():  # EXPORT CURRENT NEWS FEED
+    api9 = f"https://fljpapi.onrender.com/api/news?platform=Windows&language={language}&country=US&battlepass=true&battlepassLevel=100&tags=Product.BR"
     folder = "News"
     os.makedirs(folder, exist_ok=True)
+
     try:
         response = requests.get(api9, verify=False)
         response.raise_for_status()
         data = response.json()
-        motds = data.get("data", {}).get("motds", [])
-        for index, item in enumerate(motds):
-            if isinstance(item, dict):
-                image_url = item.get("image")
+        content_items = data.get("contentItems", [])
+        for index, item in enumerate(content_items):
+            content_fields = item.get("contentFields", {})
+            full_screen_background = content_fields.get("FullScreenBackground", {})
+            images = full_screen_background.get("Image", [])
+            for image in images:
+                image_url = image.get("url")
                 if image_url:
-                    image_name = os.path.basename(urlparse(image_url).path)
-                    img_data = requests.get(image_url).content
-                    image_path = os.path.join(folder, image_name)
-                    with open(image_path, "wb") as img_file:
-                        img_file.write(img_data)
-                    print(Fore.GREEN + f"News image saved: {image_path}")
+                    try:
+                        img_response = requests.get(image_url)
+                        img_response.raise_for_status()
+                        img = Image.open(BytesIO(img_response.content))
+                        if img.size == (1920, 1080):
+                            hash_object = hashlib.md5(image_url.encode())
+                            image_name = hash_object.hexdigest() + ".jpeg"
+                            image_path = os.path.join(folder, image_name)
+                            with open(image_path, "wb") as img_file:
+                                img_file.write(img_response.content)
+                            print(Fore.GREEN + f"News image saved: {image_path}")
+                    except requests.exceptions.RequestException as e:
+                        print(Fore.RED + f"Error downloading the image {image_url}: {e}")
+    
     except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
+        print(Fore.RED + f"Request error: {e}")
+    close()
 
 def crewexporter(): # ALL FORTNITE CREW EXPORTER
  api10 = f"https://fortniteapi.io/v2/crew/history"
@@ -582,30 +593,6 @@ def encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret): # ENCRYPTE
     print(Fore.RED + "Stopping the bot...")
     close()
     encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)
-
-# def twvideo():  # TWITTER VIDEO DOWNLOADER
-#     link = input(Fore.CYAN + "Type Twitter video link: ")
-#     if "x.com" not in link and "twitter.com" not in link:
-#         print(Fore.RED + "This link is not valid.")
-#         return
-#     ydl_opts = {
-#         'format': 'bestvideo+bestaudio/best',
-#         'outtmpl': '%(title)s.%(ext)s',
-#         'merge_output_format': 'mp4',
-#         'cookiefile': 'cookies.txt',
-#     }
-
-#     try:
-#         with YoutubeDL(ydl_opts) as ydl:
-#             print(Fore.YELLOW + "Downloading video...")
-#             ydl.download([link])
-#             print(Fore.GREEN + "Downloaded!")
-#     except Exception as e:
-#         print(Fore.RED + f"An error occurred: {e}")
-#         print(Fore.YELLOW + "Try updating yt-dlp or checking the link validity.")
-#         twvideo()
-#         close()
-#         time.sleep(2)
 
 def cosmeticname():  # EXPORT COSMETIC BY ID OR NAME
  clear()
