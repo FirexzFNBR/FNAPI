@@ -732,7 +732,7 @@ def about():
     print("")
     print('This program uses api from "GMATRIXGAMES ( @GMatrixGames ), FLJP ( @LeakPlayer ), Fortnite-API ( https://fortnite-api.com ) and FortniteAPI.io ( https://fortniteapi.io )"')
     print("")
-    print('This program was inspired (design) in AutoLeak, by Fevers .')
+    print('This program was inspired in AutoLeak, by Fevers.')
     print("")
     print('Credits to FirexFNBR and SpireFNBR, developers and owners of this program.')
     print("")
