@@ -31,11 +31,13 @@ import PIL
 import shutil
 import datetime
 import tweepy
+import math
 from yt_dlp import YoutubeDL
 from io import BytesIO
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import hashlib
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont, ImageChops
+from os import listdir
 from colorama import init
 from colorama import Fore
 from datetime import datetime
@@ -47,14 +49,14 @@ filepath = 'Exports' # COSMETICS GENERATOR PATH
 language = 'en' # PUT YOUR LANGUAGE
 apikey = 'a1c0a3b4-3cb6abc4-ca5d0d97-3ac8a5f6'
 #=========AUTH===========#
-apiKey = 'zW0gVY9jJC3Lv6NcBCx9Gc8lt'
-apiSecret = 'ecvCt8AoB9Ng4AHDtIkL4Czd11gujDrW4hS7pfMih1O21E8zUM'
-accessToken = '1343189385890717698-yUHyZNFxhpPobaLDFcZCck3yNDhnMr'
-accessTokenSecret = 'USxEwudeHvgGrUph1MzTjjEsVGsXKbViVN6WeDVKhqlcM'
+apiKey = ''
+apiSecret = ''
+accessToken = ''
+accessTokenSecret = ''
 #=== PULL CURRENT FORTNITE VERSION ===#
 response = requests.get('https://fortnitecentral.genxgames.gg/api/v1/aes')
 version = response.json()['version']
-fversion = '1.2.2'
+fversion = '1.3.0'
 #=================================#
 def clear():
     if os.name == 'nt':
@@ -71,8 +73,7 @@ def menu():
         print("")
         print(Fore.CYAN + 'Map Generation:')
         print(Fore.WHITE + "(1) Export map with POIs names (API takes too long to update)")
-        print("(2) Export map without POIs names (NOT WORKING ON v32.10 and 32.11!)")
-        print("(3) Export CLYDE map image (Temporary Option)")
+        print("(2) Export map without POIs names")
         print("")
         print(Fore.CYAN + 'Paks Grabber:')
         print(Fore.WHITE + f'(4) Export paks info from {version}')
@@ -92,13 +93,15 @@ def menu():
         print(Fore.CYAN + 'Generate cosmetics:')
         print(Fore.WHITE + f'(15) Generate new cosmetics from {version}')
         print("(16) Generate all cosmetics")
-        print(Fore.GREEN + "(17) Generate any cosmetic by name - (NEW)")
+        print("(17) Generate any cosmetic by name")
+        print(Fore.GREEN + "(18) Merge new cosmetics (NEW)")
+        print(Fore.GREEN + "(19) Merge all cosmetics (NEW)")
         print("")
         print(Fore.CYAN + 'Trackers:')
-        print(Fore.GREEN + f'(18) Tweet encrypted paks on {version} - (NEW)')
+        print(Fore.WHITE + f'(20) Tweet encrypted paks on {version}')
         print("")
         print(Fore.CYAN + 'Others:')
-        print(Fore.WHITE + '(19) Download youtube video')
+        print(Fore.WHITE + '(21) Download youtube video')
         print("")
         print(Fore.YELLOW + 'About:')
         print(Fore.WHITE + f'(About) View credits ')
@@ -114,8 +117,6 @@ def menu():
             mapwithPOI()
         elif option_choice == "2":
             mapwithoutPOI()
-        elif option_choice == "3":
-            clydemap()
         elif option_choice == "4":
             pakgrabber()
         elif option_choice == "5":
@@ -145,8 +146,12 @@ def menu():
         elif option_choice == "17":
             cosmeticname()          
         elif option_choice == "18":
-            encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)        
+            newmerger()   
         elif option_choice == "19":
+            allmerger()    
+        elif option_choice == "20":
+            encryptedpaks(apiKey, apiSecret, accessToken, accessTokenSecret)                
+        elif option_choice == "21":
             ytvideo()                                                                       
         elif option_choice == "Exit":
             print("Closing the program...")
@@ -649,7 +654,75 @@ def cosmeticname():  # EXPORT COSMETIC BY ID OR NAME
             print(Fore.RED + "No data found for the provided name.")
     except Exception as e:
         print(f"An error occurred: {e}")
-    close()     
+    close()  
+
+def newmerger():
+    print(Fore.GREEN + '\nMerging images...')
+    images = [file for file in listdir(f'Exports/New Cosmetics') 
+              if file.lower().endswith('icon.png') and not file.lower().endswith('smallicon.png')]
+    if not images:
+        print(Fore.RED + 'No images found.')
+        close()
+    standard_size = (512, 512)
+    count = int(round(math.sqrt(len(images) + 0.5), 0))
+    total_images = len(images)
+    print(Fore.YELLOW + f'\nFound {total_images} icons.')
+    finalImg = Image.new("RGBA", (standard_size[0] * count, standard_size[1] * count))
+    x = 0
+    y = 0
+    counter = 0
+
+    for img in images:
+        tImg = Image.open(f'Exports/New Cosmetics/{img}').convert("RGBA")
+        tImg = tImg.resize(standard_size, Image.Resampling.LANCZOS)
+        if counter >= count:
+            y += standard_size[1]
+            x = 0
+            counter = 0
+        mask = tImg.getchannel('A')
+        finalImg.paste(tImg, (x, y), mask)
+        x += standard_size[0]
+        counter += 1
+
+    finalImg.show()
+    finalImg.save(f'Exports/merged_cosmetics.png')
+    print(Fore.GREEN + '\nSaved merged image as "merged_cosmetics.png"!')
+    time.sleep(5)
+    close()
+
+def allmerger():
+    print(Fore.GREEN + '\nMerging images...')
+    images = [file for file in listdir(f'Exports/All Cosmetics') 
+              if file.lower().endswith('icon.png') and not file.lower().endswith('smallicon.png')]
+    if not images:
+        print(Fore.RED + 'No images found.')
+        exit()
+    standard_size = (512, 512)
+    count = int(round(math.sqrt(len(images) + 0.5), 0))
+    total_images = len(images)
+    print(Fore.YELLOW + f'\nFound {total_images} icons.')
+    finalImg = Image.new("RGBA", (standard_size[0] * count, standard_size[1] * count))
+    x = 0
+    y = 0
+    counter = 0
+
+    for img in images:
+        tImg = Image.open(f'Exports/All Cosmetics/{img}').convert("RGBA")
+        tImg = tImg.resize(standard_size, Image.Resampling.LANCZOS)
+        if counter >= count:
+            y += standard_size[1]
+            x = 0
+            counter = 0
+        mask = tImg.getchannel('A')
+        finalImg.paste(tImg, (x, y), mask)
+        x += standard_size[0]
+        counter += 1
+
+    finalImg.show()
+    finalImg.save(f'Exports/merged_allcosmetics.png')
+    print(Fore.GREEN + '\nSaved merged image as "merged_allcosmetics.png"!')
+    time.sleep(5)
+    exit()
 
 def about():
     clear()
